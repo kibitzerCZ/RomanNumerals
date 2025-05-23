@@ -66,6 +66,7 @@
                 // For example, I can only precede and, thus, be subtracted from V and X, which are equal to five and ten times the value of I,
                 // respectively. Under this rule, the number 1999 cannot be represented as MIM, because M is equal to one thousand times the
                 // value of I. The Roman representation of 1999 is MCMXCIX, or M (1000) + CM (1000-100) + XC (100-10) + IX (10-1)."
+                // [https://www.encyclopedia.com/science/encyclopedias-almanacs-transcripts-and-maps/roman-numerals-their-origins-impact-and-limitations]
 
                 this.Right = new Node(literal, this);
                 return this.Right;
