@@ -1,6 +1,6 @@
 # RomanNumerals
 
-Simple Roman numerals parser.
+Simple Roman numerals parser for .NET (8.0).
 
 ### Usage
 
@@ -9,7 +9,7 @@ using kibitzerCZ.RomanNumerals;
 
 public void Test()
 {
-	int decimal = RomanNumeral.Parse("MCCXXXIV");		//returns 1234
+  int decimal = RomanNumeral.Parse("MCCXXXIV");		//returns 1234
 }
 ```
 
