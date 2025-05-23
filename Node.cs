@@ -1,4 +1,4 @@
-﻿namespace RomanNumbers
+﻿namespace kibitzerCZ.RomanNumerals
 {
     public class Node
     {
@@ -55,12 +55,17 @@
                 mMultiplier++;
                 return this;
             }
-            
+
             // If incoming literal is LOWER than mine, append it as my right child.
             if (literal < this.mLiteral)
             {
                 if (this.Right != null)
                     throw new Exception();
+
+                // TODO: "A numeral can only precede another numeral that is equal to ten times the value of the smaller numeral or less.
+                // For example, I can only precede and, thus, be subtracted from V and X, which are equal to five and ten times the value of I,
+                // respectively. Under this rule, the number 1999 cannot be represented as MIM, because M is equal to one thousand times the
+                // value of I. The Roman representation of 1999 is MCMXCIX, or M (1000) + CM (1000-100) + XC (100-10) + IX (10-1)."
 
                 this.Right = new Node(literal, this);
                 return this.Right;

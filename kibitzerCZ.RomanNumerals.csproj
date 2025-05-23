@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Title>Roman numerals parser</Title>
+    <Authors>kibitzerCZ</Authors>
+    <Company />
+    <Description>Roman numerals parsing library</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/kibitzerCZ/RomanNumerals</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>roman numerals</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -1,6 +1,6 @@
-﻿namespace RomanNumbers
+﻿namespace kibitzerCZ.RomanNumerals
 {
-    public class RomanNumber
+    public class RomanNumeral
     {
         public static int Parse(string s)
         {

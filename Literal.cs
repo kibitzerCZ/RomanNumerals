@@ -1,4 +1,4 @@
-﻿namespace RomanNumbers
+﻿namespace kibitzerCZ.RomanNumerals
 {
     internal enum Literal
     {
