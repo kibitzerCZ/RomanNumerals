@@ -5,10 +5,10 @@
         /// <summary>
         /// Maximum of three same consecutive numerals is allowed (default).
         /// </summary>
-        meThree = 3,
+        mrThree = 3,
         /// <summary>
         /// Maximum of four same executive numerals is allowed.
         /// </summary>
-        meFour = 4
+        mrFour = 4
     }
 }

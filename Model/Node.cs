@@ -2,12 +2,29 @@
 {
     public class Node
     {
+        /// <summary>
+        /// Parent node
+        /// </summary>
         private Node? Parent;
+        /// <summary>
+        /// Left child
+        /// </summary>
         private Node? Left;
+        /// <summary>
+        /// Right child
+        /// </summary>
         private Node? Right;
 
-        private int Multiplier;
+
+        /// <summary>
+        /// Numeral this node holds
+        /// </summary>
         private readonly Numeral? Numeral;
+
+        /// <summary>
+        /// Same consecutive numerals counter
+        /// </summary>
+        private int Multiplier;
 
         private Node(Node? parent = null)
         {
@@ -18,15 +35,15 @@
             Right = null;
         }
 
-        internal Node(Numeral literal, Node parent) : this(parent)
+        internal Node(Numeral numeral, Node parent) : this(parent)
         {
-            Numeral = literal;
+            Numeral = numeral;
             Parent = parent;
             Multiplier = 1;
         }
 
         /// <summary>
-        /// Creates a root node (has no value and a child is always appended as Right)
+        /// Creates a root node (has no parent, no children and no value)
         /// </summary>
         /// <returns></returns>
         internal static Node CreateRoot()
@@ -34,38 +51,46 @@
             return new Node(null);
         }
 
+        /// <summary>
+        /// Appends new node with given numeral to the current node.
+        /// </summary>
+        /// <param name="numeral"></param>
+        /// <param name="options"></param>
+        /// <returns>The currently appended node (node with the input numeral)</returns>
+        /// <exception cref="FormatException"></exception>
+        /// <exception cref="Exception"></exception>
         internal Node? Append(Numeral numeral, Options? options=null)
         {
             // If I am a root node, make the incoming numeral my right child.
-            if (Numeral == null)
+            if (this.Numeral == null)
             {
                 Right = new Node(numeral, this);
                 return Right;
             }
 
             // If the incoming numeral is of same value as mine, just increment the Multiplier.            
-            if (Numeral == numeral)
+            if (this.Numeral == numeral)
             {
-                // Cannot increment multiplier if left child already exists
+                // Cannot increment multiplier if left child (i.e. lower numeral) already exists (e.g. IX is valid, but IXX is not)
                 if (Left != null)
                     throw new FormatException();
 
                 // Multiplication of numerals V, L and D is not allowed
-                if (numeral == RomanNumerals.Numeral.V || numeral == RomanNumerals.Numeral.L || numeral == RomanNumerals.Numeral.D)
+                if (CheckUnrepeatableNumeral(numeral))
                     throw new FormatException("Invalid format");
 
                 // By default maximum consecutive repetition of three same numerals is allowed.
                 // Can be modified to allow 4 by using Options.
-                if (this.Multiplier == (options?.MaximumRepetitions is MaximumRepetitions.meFour ? 4 : 3))
-                    throw new FormatException($"Too many repetitions of numeral {numeral}");
+                if (this.Multiplier == (options?.MaximumRepetitions is MaximumRepetitions.mrFour ? 4 : 3))
+                    throw new FormatException($"Invalid format. Too many repetitions of numeral {numeral}");
 
                 Multiplier++;
                 return this;
             }
 
-            // Append everything as a right child.
+            // Append everything else as a RIGHT child.
 
-            // If the incoming literal is LOWER than mine, append it as my RIGHT child.
+            // If the incoming numeral is LOWER than mine, append it as my right child (for good).
             if (numeral < this.Numeral)
             {
                 // Right child should not exist at this moment. If it does, it is an error.
@@ -74,31 +99,31 @@
 
                 // If I am about to create a right child with the same numeral as my left child, throw
                 if (Left != null && Left.Numeral == numeral)
-                    throw new FormatException("Invalid Roman numeral");
+                    throw new FormatException("Invalid format");
 
                 Right = new Node(numeral, this);
                 return Right;
             }
 
             // If the incoming numeral is HIGHER than mine, append it *temporarily* as my right child and perform left rotation.
-            // This way I will become the left child of the incoming numeral:
+            // This way I (X) will become the left child of the incoming numeral (Y):
             //
-            //  \                                \
-            // ( X )                            ( Y )
-            //    \         will become          /
-            //    ( Y )                       ( X )
+            //  \            \                     \
+            // ( X )        ( X )                 ( Y )
+            //         ->      \         =>        /
+            //                ( Y )             ( X )
             //
             if (numeral > this.Numeral)
             {
                 // Right child should not exist yet. If it does, it is an error.
                 if (Right != null)
-                    throw new Exception();
-
-                // Numerals V, L and D cannot be subtracted (i.e. cannot become the left child)
-                if (Numeral == RomanNumerals.Numeral.V || Numeral == RomanNumerals.Numeral.L || Numeral == RomanNumerals.Numeral.D)
-                    throw new FormatException("Invalid format");
+                    throw new Exception("Right child already exists");
 
                 CheckNumeralsRatio(numeral);
+
+                // Numerals V, L and D cannot be subtracted (i.e. cannot become the left child). So check my numeral before rotation.
+                if (CheckUnsubtractableNumeral(this.Numeral.Value))
+                    throw new FormatException("Invalid format");
 
                 Node n = new(numeral, this);
                 Right = n;
@@ -110,6 +135,11 @@
             return null;
         }
 
+        /// <summary>
+        /// Checks if lower numeral I am about to append as a left child is at most 10 times lower than my numeral.
+        /// </summary>
+        /// <param name="numeral"></param>
+        /// <exception cref="FormatException">Thrown if numeral's ratio to my numeral is larger than 10.</exception>
         private void CheckNumeralsRatio(Numeral numeral)
         {
             if (this.Numeral == null)
@@ -125,6 +155,33 @@
                 throw new FormatException("Invalid format");
         }
 
+        /// <summary>
+        /// Checks whether the given numeral belongs to the set of unrepeatable numerals (V, L and D)
+        /// </summary>
+        /// <param name="numeral"></param>
+        /// <returns>True if numeral is unrepeatable, false otherwise</returns>
+        private static bool CheckUnrepeatableNumeral(Numeral numeral)
+        {
+            return (numeral == RomanNumerals.Numeral.V || numeral == RomanNumerals.Numeral.L || numeral == RomanNumerals.Numeral.D);
+        }
+
+        /// <summary>
+        /// Checks whether the given numeral can be substracted (i.e. can be a left child)
+        /// </summary>
+        /// <param name="numeral"></param>
+        /// <returns></returns>
+        private static bool CheckUnsubtractableNumeral(Numeral numeral)
+        {
+            //the same set as for unrepeatable numerals
+            return CheckUnrepeatableNumeral(numeral);
+        }
+
+        /// <summary>
+        /// Performs left rotation to the current node. The node's right child will become parent to the node (the node will become left
+        /// child of the new parent).
+        /// </summary>
+        /// <exception cref="Exception">Rotation is not possible due to data error</exception>
+        /// <exception cref="FormatException">Rotation is not possible due to rules breaching</exception>
         private void RotateLeft()
         {
             if (Parent == null)
@@ -132,12 +189,12 @@
 
             // Cannot rotate multiplied node (that would equal to subtracting more than one numeral which is not allowed).
             if (this.Multiplier > 1)
-                throw new FormatException("Invalid Roman numeral");
+                throw new FormatException("Invalid format");
 
             // Cannot rotate left if a left child already exists - that would lead to more than one numeral to be
             // subtracted which is not allowed.
             if (Left != null)
-                throw new FormatException("Invalid Roman numeral");
+                throw new FormatException("Invalid format");
 
             // If no right child exists, there is nothing to rotate.
             if (Right == null)
@@ -149,21 +206,27 @@
             //         \                           \  
             //        ( I )*         -->          ( L )
             //           \                         /
-            //          ( L )                   ( I )*
-            if (Parent.Numeral == Right.Numeral)
+            //          ( L )                   ( I )
+            if (Parent.Numeral != null && Parent.Numeral == Right.Numeral)
             {
-                if (Parent.Numeral == RomanNumerals.Numeral.V || Parent.Numeral == RomanNumerals.Numeral.L || Parent.Numeral == RomanNumerals.Numeral.D)
-                    throw new FormatException("Invalid Roman numeral");
+                if (CheckUnrepeatableNumeral(Parent.Numeral.Value))
+                    throw new FormatException("Invalid format");
             }
 
+            // My right child will become my parent's new right child (and my new parent - I will become his left child)
             Parent.Right = Right;
             Right.Parent = Parent;
-            Parent = Right;
             Right.Left = this;
+            Parent = Right;
+            // I will lose my right child
             Right = null;
         }
 
-        public int GetDecimalValue()
+        /// <summary>
+        /// Gets decimal value of given numeral
+        /// </summary>
+        /// <returns></returns>
+        internal int GetDecimalValue()
         {
             int result = 0;
 
