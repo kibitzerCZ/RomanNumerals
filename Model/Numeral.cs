@@ -1,6 +1,6 @@
 ﻿namespace kibitzerCZ.RomanNumerals
 {
-    internal enum Literal
+    internal enum Numeral
     {
         I = 1,
         V = 5,
