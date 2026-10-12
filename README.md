@@ -19,9 +19,9 @@ Or you can use `TryParse` which will return `false` instead of throwing an excep
 
 #### Options
 
-Both `Parse` and `TryParse` functions accept optional `Options` parameter. This is a class that allow you to modify the parsing process.
+Both `Parse` and `TryParse` functions accept optional `Options` parameter. This is a class that allows you to modify the parsing process.
 At the moment only one option called `MaximumRepetitions` is supported. This option controls the maximum allowed consecutive repetitions of
-the same numeral. The default maximum is 3 (e.g. III or VIII), but during history (and in clock industry) four repetitions were used (e.g. IIII or VIIII).
+the same numeral. The default maximum is 3 (e.g. III or VIII), but during history (and in clock industry) four repetitions (e.g. IIII or VIIII) have been used.
 
 #### Vinculum
 
